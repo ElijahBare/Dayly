@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="EN">
+<head>
+    <meta charset="UTF-8">
+    <title>Dayly</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+    <h1>My Dayly Journal</h1>
+</header>
+<main>
+    <button id="view-button">View Entries</button>
+    <br>
+
+    <div class="entry-container">
+        <label>
+            <textarea id="content" placeholder="Write your journal entry here..."></textarea>
+        </label>
+    </div>
+    <button id="save-button">Save</button>
+</main>
+<script src="api_interactions.js"></script>
+<script>
+    const viewButton = document.querySelector("#view-button");
+    viewButton.addEventListener("click", () => {
+        window.location.href = "viewer.html";
+    });
+</script>
+</body>
+</html>

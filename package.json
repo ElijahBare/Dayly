@@ -1,0 +1,16 @@
+{
+  "name": "dayly",
+  "version": "1.0.0",
+  "description": "A secure and self hosted journaling app built to withstand the test of time",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "package":"pyinstaller --onefile .\\backend\\backend.py && move .\\dist\\backend.exe .\\backend\\backend.exe && electron-packager . dayly --overwrite --platform=win32,darwin,linux --arch=x64 --prune=true --out=release-builds"
+  },
+  "dependencies": {
+    "electron": "^24.0.0"
+  },
+  "devDependencies": {
+    "electron-packager": "^15.4.0"
+  }
+}

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Journal Entries</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <button id="back-button">Back to Logger</button>
+
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #468c40;
+        }
+
+        .card {
+            background-color: #ffffff;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center">Journal Entries</h1>
+    <div id="entries"></div>
+</div>
+<!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    const viewButton = document.querySelector("#back-button");
+    viewButton.addEventListener("click", () => {
+        window.location.href = "index.html";
+    });
+
+    function pinEntry(entryId) {
+        fetch(`http://localhost:5000/api/entry/${entryId}/pin`, {
+            method: 'PUT'
+        })
+            .then(response => response.json())
+            .then(() => {
+                window.location.reload();
+            });
+    }
+
+    function unpinEntry(entryId) {
+        fetch(`http://localhost:5000/api/entry/${entryId}/unpin`, {
+            method: 'PUT'
+        })
+            .then(response => response.json())
+            .then(() => {
+                window.location.reload();
+            });
+    }
+
+
+    function deleteEntry(entryId) {
+        const result = confirm("Are you sure you want to delete this entry?");
+
+        if (result) {
+            $.ajax({
+                url: 'http://localhost:5000/api/entry/' + entryId,
+                type: 'DELETE',
+                success: function () {
+                    $("#" + entryId).remove();
+                }
+            });
+        }
+    }
+
+    $(document).ready(function() {
+        $.get("http://localhost:5000/api/entries", function(data) {
+            $.each(data, function(i, entry) {
+                var content = entry.content.replace(/\n/g, '<br>');
+                var timestamp = entry.timestamp;
+                var id = entry.id;
+                var html = '<div class="card" id="' + id + '"><div class="card-body"><p class="card-text">' + content + '</p><p class="card-text"><small class="text-muted">' + timestamp + '</small></p><button class="btn btn-danger btn-sm float-right" onclick="deleteEntry(' + id + ')">Delete</button><button class="btn btn-sm float-right" onclick="pinEntry(' + id + ')" style="display: ' + (entry.pinned ? 'none' : 'inline-block') + '">Pin</button><button class="btn btn-sm float-right" onclick="unpinEntry(' + id + ')" style="display: ' + (entry.pinned ? 'inline-block' : 'none') + '">Unpin</button></div></div>';
+                $("#entries").append(html);
+            });
+        });
+    });
+
+
+</script>
+</body>
+</html>
