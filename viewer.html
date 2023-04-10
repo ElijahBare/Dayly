@@ -39,8 +39,12 @@
     });
 
     function pinEntry(entryId) {
-        fetch(`http://localhost:5000/api/entry/${entryId}/pin`, {
-            method: 'PUT'
+        fetch('http://localhost:5000/api/pin/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ entry_id: entryId }),
         })
             .then(response => response.json())
             .then(() => {
@@ -49,14 +53,19 @@
     }
 
     function unpinEntry(entryId) {
-        fetch(`http://localhost:5000/api/entry/${entryId}/unpin`, {
-            method: 'PUT'
+        fetch('http://localhost:5000/api/unpin/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ entry_id: entryId }),
         })
             .then(response => response.json())
             .then(() => {
                 window.location.reload();
             });
     }
+
 
 
     function deleteEntry(entryId) {
@@ -75,6 +84,8 @@
 
     $(document).ready(function() {
         $.get("http://localhost:5000/api/entries", function(data) {
+            //TODO Sort entries by pinned status
+
             $.each(data, function(i, entry) {
                 var content = entry.content.replace(/\n/g, '<br>');
                 var timestamp = entry.timestamp;
@@ -84,6 +95,7 @@
             });
         });
     });
+
 
 
 </script>

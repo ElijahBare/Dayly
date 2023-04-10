@@ -1,3 +1,5 @@
+import hashlib
+import os
 import sqlite3
 from flask import Flask, request, jsonify
 from datetime import datetime
@@ -11,7 +13,7 @@ def init_db():
     c = conn.cursor()
     c.execute(
         '''CREATE TABLE IF NOT EXISTS journal_entries (id INTEGER PRIMARY KEY, encrypted_content TEXT, key TEXT, 
-        timestamp TEXT)''')
+        timestamp TEXT, pinned INTEGER DEFAULT 0)''')
     conn.commit()
     conn.close()
 
@@ -47,6 +49,7 @@ def get_entries():
         encrypted_content = row[1]
         key = row[2]
         timestamp = row[3]
+        pinned = bool(row[4])
 
         # Decrypt the content using the key
         fernet = Fernet(key)
@@ -55,10 +58,13 @@ def get_entries():
         entries.append({
             'id': id,
             'content': content,
-            'timestamp': timestamp
+            'timestamp': timestamp,
+            'pinned': pinned
         })
 
     conn.close()
+
+    entries.reverse()
 
     return jsonify(entries)
 
@@ -68,6 +74,31 @@ def delete_entry(entry_id):
     conn = sqlite3.connect('journal.db')
     c = conn.cursor()
     c.execute("DELETE FROM journal_entries WHERE id=?", (entry_id,))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"status": "success"})
+
+
+@app.route('/api/pin/', methods=['POST'])
+def pin_entry():
+    entry_id = request.json.get('entry_id')
+
+    conn = sqlite3.connect('journal.db')
+    c = conn.cursor()
+    c.execute("UPDATE journal_entries SET pinned = 1 WHERE id=?", (entry_id,))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"status": "success"})
+
+
+@app.route('/api/unpin/', methods=['POST'])
+def unpin_entry():
+    entry_id = request.json.get('entry_id')
+    conn = sqlite3.connect('journal.db')
+    c = conn.cursor()
+    c.execute("UPDATE journal_entries SET pinned = 0 WHERE id=?", (entry_id,))
     conn.commit()
     conn.close()
 
