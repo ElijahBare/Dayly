@@ -1,4 +1,2 @@
-pyinstaller
-sqlite3
 flask
 cryptography
