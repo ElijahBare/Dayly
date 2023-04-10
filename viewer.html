@@ -84,7 +84,9 @@
 
     $(document).ready(function() {
         $.get("http://localhost:5000/api/entries", function(data) {
-            //TODO Sort entries by pinned status
+          data.sort(function(a, b) {
+                return (a.pinned === b.pinned) ? 0 : a.pinned ? -1 : 1;
+            });
 
             $.each(data, function(i, entry) {
                 var content = entry.content.replace(/\n/g, '<br>');
